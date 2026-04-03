@@ -9,6 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="BFMIDI" />
   <title>BFMIDI Mobile</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./bfmidi_icon.svg" />
+  <link rel="shortcut icon" href="./bfmidi_icon.svg" />
   <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet" />
@@ -68,10 +70,10 @@
     .brand-icon {
       width: 36px; height: 36px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+      background: #0d111a url('./bfmidi_icon.svg') center/cover no-repeat;
       display: flex; align-items: center; justify-content: center;
-      color: #000; font-weight: 800; font-size: 0.72rem;
-      box-shadow: 0 0 12px rgba(245,158,11,0.35);
+      color: transparent; font-size: 0;
+      box-shadow: 0 0 12px rgba(67, 56, 202, 0.35);
       flex-shrink: 0;
       letter-spacing: -0.02em;
     }
@@ -206,12 +208,12 @@
     .connect-logo {
       width: 72px; height: 72px;
       border-radius: 20px;
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+      background: #0d111a url('./bfmidi_icon.svg') center/cover no-repeat;
       display: flex; align-items: center; justify-content: center;
-      color: #000; font-weight: 800; font-size: 1.4rem;
+      color: transparent; font-size: 0;
       box-shadow:
-        0 0 0 1px rgba(245,158,11,0.2),
-        0 0 40px rgba(245,158,11,0.25),
+        0 0 0 1px rgba(67,56,202,0.25),
+        0 0 40px rgba(37,99,235,0.25),
         0 8px 24px rgba(0,0,0,0.4);
     }
 
@@ -254,6 +256,46 @@
     }
 
     .field-row { display: flex; align-items: center; gap: 10px; }
+
+    .quick-connect-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-quick-connect {
+      min-height: 54px;
+      border-radius: 10px;
+      border: 1px solid #4a4a50;
+      background: linear-gradient(180deg, #2f2f34 0%, #252529 100%);
+      color: #f2f2f2;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: transform 0.1s, border-color 0.18s, box-shadow 0.18s;
+    }
+    .btn-quick-connect:active {
+      transform: scale(0.97);
+    }
+    .btn-quick-connect.primary {
+      border-color: rgba(255, 179, 0, 0.6);
+      box-shadow: 0 0 10px rgba(255, 179, 0, 0.16);
+    }
+    .btn-quick-sub {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #a1a1aa;
+    }
 
     .ip-input {
       flex: 1; height: 46px;
@@ -434,12 +476,26 @@
 
   <div class="connect-card">
     <div>
-      <div class="field-label">Endereco do dispositivo (IP ou host)</div>
+      <div class="field-label">Conexao rapida</div>
+      <div class="quick-connect-grid">
+        <button class="btn-quick-connect primary" id="btn-quick-ap" type="button">
+          WIFI DIRETO
+          <span class="btn-quick-sub">192.168.4.1</span>
+        </button>
+        <button class="btn-quick-connect" id="btn-quick-sta" type="button">
+          REDE STA
+          <span class="btn-quick-sub">bfmidi.local</span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="field-label">Conexao manual (opcional)</div>
       <div class="field-row">
         <input class="ip-input" id="ip-input" type="text"
                placeholder="192.168.4.1 ou bfmidi.local" inputmode="url" autocomplete="off"
                autocorrect="off" autocapitalize="off" spellcheck="false" />
-        <button class="btn-connect" id="btn-connect">Conectar</button>
+        <button class="btn-connect" id="btn-connect">Manual</button>
       </div>
     </div>
     <div id="connect-error"></div>
@@ -831,7 +887,7 @@ async function doConnect(hostInput) {
   }
 
   btn.disabled = false;
-  btn.textContent = 'Conectar';
+  btn.textContent = 'Manual';
 
   if (connectedHost) {
     deviceHost = connectedHost;
@@ -857,7 +913,21 @@ async function doConnect(hostInput) {
   }
 }
 
+function connectQuick(host) {
+  const targetHost = normalizeHostInput(host) || host;
+  document.getElementById('ip-input').value = targetHost;
+  doConnect(targetHost);
+}
+
 // â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+document.getElementById('btn-quick-ap').addEventListener('click', () => {
+  connectQuick(DEFAULT_HOST_AP);
+});
+
+document.getElementById('btn-quick-sta').addEventListener('click', () => {
+  connectQuick(DEFAULT_HOST_STA);
+});
+
 document.getElementById('btn-connect').addEventListener('click', () => {
   doConnect(document.getElementById('ip-input').value.trim());
 });
