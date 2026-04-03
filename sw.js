@@ -1,4 +1,4 @@
-const CACHE = 'bfmidi-pwa-v7';
+const CACHE = 'bfmidi-pwa-v11';
 
 // Only cache the PWA shell itself.
 // Parity pages (preset-config, global-config, system) are always fetched
@@ -7,6 +7,8 @@ const SHELL = [
   './index.html',
   './manifest.json',
   './bfmidi_icon.svg',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   const ALLOWED_EXTERNAL_ORIGINS = new Set(["http://192.168.4.1", "http://bfmidi.local"]);
 
   function normalizeUrl(input) {
@@ -77,14 +77,18 @@
   }
 
   function getParentBridge() {
-    if (!window.parent || window.parent === window) {
+    try {
+      if (!window.parent || window.parent === window) {
+        return null;
+      }
+      const bridge = window.parent.BFMIDIExternalBridge;
+      if (!bridge || typeof bridge.request !== "function") {
+        return null;
+      }
+      return bridge;
+    } catch (e) {
       return null;
     }
-    const bridge = window.parent.BFMIDIExternalBridge;
-    if (!bridge || typeof bridge.request !== "function") {
-      return null;
-    }
-    return bridge;
   }
 
   const originalFetch = window.fetch.bind(window);
@@ -96,19 +100,43 @@
     }
 
     const bridge = getParentBridge();
-    if (!bridge) {
-      return Promise.reject(
-        new Error("Bridge USB indisponivel. Volte para a pagina principal e clique em Conectar.")
-      );
+    if (bridge) {
+      const requestInit = await requestToInitObject(input, init);
+      const result = await bridge.request(url.toString(), requestInit);
+
+      return new Response(result?.body ?? "", {
+        status: result?.status ?? 200,
+        headers: result?.headers ?? {},
+      });
     }
 
-    const requestInit = await requestToInitObject(input, init);
-    const result = await bridge.request(url.toString(), requestInit);
+    // PWA Wi-Fi Direct Fetch Fallback
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      let hostParam = searchParams.get('host');
+      if (!hostParam) {
+        throw new Error("Bridge USB/Host indisponivel.");
+      }
 
-    return new Response(result?.body ?? "", {
-      status: result?.status ?? 200,
-      headers: result?.headers ?? {},
-    });
+      const target = `http://${hostParam}${url.pathname}${url.search}`;
+      const requestInit = await requestToInitObject(input, init);
+      requestInit.mode = 'cors';
+      requestInit.credentials = 'omit';
+
+      if (AbortSignal && AbortSignal.timeout) {
+          requestInit.signal = AbortSignal.timeout(10000);
+      }
+
+      return await originalFetch(target, requestInit);
+    } catch (err) {
+      try {
+        window.parent.postMessage({ type: "BFMIDI_DISCONNECT" }, "*");
+      } catch (e) {}
+
+      return Promise.reject(
+        new Error("Erro de conexão: Não foi possível acessar o dispositivo BFMIDI.")
+      );
+    }
   };
 
   async function syncSystemBoardState() {

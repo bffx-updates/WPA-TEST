@@ -27,8 +27,14 @@ window.addEventListener('touchstart', markSystemUserInteracted, { capture: true,
     function startMidiSocket() {
       const log = document.getElementById('midiLog');
       log.value = 'Connecting to MIDI monitor...\n';
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = wsProtocol + '//' + window.location.host + '/ws';
+      let targetHost = window.location.host;
+      const searchParams = new URLSearchParams(window.location.search);
+      const hostParam = searchParams.get('host');
+      if (hostParam) {
+          targetHost = hostParam;
+      }
+      const wsProtocol = window.location.protocol === 'https:' && !hostParam ? 'wss:' : 'ws:';
+      const wsUrl = wsProtocol + '//' + targetHost + '/ws';
 
       midiSocket = new WebSocket(wsUrl);
 
@@ -266,7 +272,14 @@ window.addEventListener('touchstart', markSystemUserInteracted, { capture: true,
 
     // --- WiFi Functions ---
     function setupWifiEvents() {
-      const evtSource = new EventSource('/events');
+      let targetHost = window.location.host;
+      const searchParams = new URLSearchParams(window.location.search);
+      const hostParam = searchParams.get('host');
+      if (hostParam) {
+          targetHost = hostParam;
+      }
+      const evtSourceUrl = (window.location.protocol === 'https:' && !hostParam ? 'https:' : 'http:') + '//' + targetHost + '/events';
+      const evtSource = new EventSource(evtSourceUrl);
 
       evtSource.onopen = function() {
         console.log("Event connection established.");

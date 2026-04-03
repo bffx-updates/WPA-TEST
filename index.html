@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -755,6 +755,16 @@ async function testConnection(host) {
   return false;
 }
 
+function openDirectHost(host, sameTab = false) {
+  const normalized = normalizeHostInput(host) || deviceHost || DEFAULT_HOST_AP;
+  const url = `http://${normalized}/preset-config`;
+  if (sameTab) {
+    window.location.href = url;
+    return;
+  }
+  window.open(url, '_blank');
+}
+
 // â”€â”€ CSS injected into parity iframe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MOBILE_CSS = `
 /* === BFMIDI Mobile Override === */
@@ -845,68 +855,71 @@ function loadPage(page) {
     loader.classList.add('hidden');
   };
 
-  frame.src = PAGE_PATHS[page];
+  frame.src = PAGE_PATHS[page] + '?host=' + encodeURIComponent(deviceHost);
 }
 
 // â”€â”€ Connect flow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async function doConnect(hostInput) {
+function startEditorSession(host, showToast = true) {
+  const normalized = normalizeHostInput(host) || DEFAULT_HOST_AP;
+  deviceHost = normalized;
+  localStorage.setItem(LS_HOST, deviceHost);
+  localStorage.setItem(LS_IP_LEGACY, deviceHost); // keep old key updated
+  setQuickModeSelection(deviceHost);
+
+  document.getElementById('connect-screen').classList.add('hidden');
+  document.getElementById('app').style.display = 'flex';
+  setConnectionState(true);
+  loadPage(currentPage);
+  if (showToast) {
+    toast('Conectado a ' + deviceHost, 'ok');
+  }
+}
+
+async function doConnect(hostInput, options = {}) {
+  const probe = !!options.probe;
+  const showToast = options.showToast !== false;
   const candidates = buildHostCandidates(hostInput);
 
   const errEl = document.getElementById('connect-error');
-  const quickAp = document.getElementById('btn-quick-ap');
-  const quickSta = document.getElementById('btn-quick-sta');
   const openDirectBtn = document.getElementById('btn-open-direct');
   errEl.classList.remove('visible');
   openDirectBtn.classList.remove('visible');
-  if (quickAp) quickAp.disabled = true;
-  if (quickSta) quickSta.disabled = true;
-  setConnecting('Conectando...');
 
+  const preferred = candidates[0] || deviceHost || DEFAULT_HOST_AP;
+  setConnecting('Carregando...');
+
+  // Default UX: user chooses mode and already has network, so open immediately.
+  if (!probe) {
+    startEditorSession(preferred, showToast);
+    return;
+  }
+
+  // Optional strict probe path (kept for diagnostics).
   let connectedHost = null;
   for (const host of candidates) {
-    setConnecting('Conectando...');
     if (await testConnection(host)) {
       connectedHost = host;
       break;
     }
   }
 
-  if (quickAp) quickAp.disabled = false;
-  if (quickSta) quickSta.disabled = false;
-
   if (connectedHost) {
-    deviceHost = connectedHost;
-    localStorage.setItem(LS_HOST, deviceHost);
-    localStorage.setItem(LS_IP_LEGACY, deviceHost); // keep old key updated
-    setQuickModeSelection(deviceHost);
-
-    document.getElementById('connect-screen').classList.add('hidden');
-    document.getElementById('app').style.display = 'flex';
-    setConnectionState(true);
-    loadPage(currentPage);
-    toast('Conectado a ' + deviceHost, 'ok');
-  } else {
-    setConnectionState(false);
-    const attempted = candidates.map(h => `http://${h}`).join(' ou ');
-    let msg = `Nao foi possivel conectar em ${attempted}. Verifique se o celular esta na mesma rede da controladora.`;
-    if (location.protocol === 'https:') {
-      msg += ' No Chrome Android, quando aparecer o aviso de acesso a rede local, toque em Permitir.';
-    }
-    errEl.textContent = msg;
-    errEl.classList.add('visible');
-    openDirectBtn.classList.add('visible');
-
-    // Keep visual mode selected when user explicitly chose AP/STA.
-    if (candidates[0] === DEFAULT_HOST_AP || candidates[0] === DEFAULT_HOST_STA) {
-      setQuickModeSelection(candidates[0]);
-    }
+    startEditorSession(connectedHost, showToast);
+    return;
   }
+
+  setConnectionState(false);
+  const attempted = candidates.map(h => `http://${h}`).join(' ou ');
+  errEl.textContent = `Nao foi possivel conectar em ${attempted}.`;
+  errEl.classList.add('visible');
+  openDirectBtn.classList.add('visible');
+  setQuickModeSelection(preferred);
 }
 
 function connectQuick(host) {
   const targetHost = normalizeHostInput(host) || host;
   setQuickModeSelection(targetHost);
-  doConnect(targetHost);
+  doConnect(targetHost, { probe: false, showToast: false });
 }
 
 // â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -919,7 +932,7 @@ document.getElementById('btn-quick-sta').addEventListener('click', () => {
 });
 
 document.getElementById('btn-open-direct').addEventListener('click', () => {
-  window.open(`http://${deviceHost}/preset-config`, '_blank');
+  openDirectHost(deviceHost, true);
 });
 
 document.getElementById('status-pill').addEventListener('click', () => {
@@ -943,23 +956,23 @@ document.querySelectorAll('.nav-btn').forEach(btn =>
   if (localStorage.getItem(LS_CONN) === '1') {
     document.getElementById('app').style.display = 'flex';
     document.getElementById('connect-screen').classList.add('hidden');
-    setConnecting('Reconectando...');
-    doConnect(deviceHost).then(() => {
-      if (!connected) {
-        document.getElementById('app').style.display = 'none';
-        document.getElementById('connect-screen').classList.remove('hidden');
-      }
-    }).catch(() => {
-      setConnectionState(false);
-      document.getElementById('app').style.display = 'none';
-      document.getElementById('connect-screen').classList.remove('hidden');
-    });
+    doConnect(deviceHost, { probe: false, showToast: false });
   }
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 })();
+
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'BFMIDI_DISCONNECT') {
+    if (connected) {
+      setConnectionState(false);
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('connect-screen').classList.remove('hidden');
+    }
+  }
+});
 </script>
 </body>
 </html>
