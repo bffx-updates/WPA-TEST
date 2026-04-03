@@ -1,11 +1,11 @@
 {
-  "name": "BFMIDI Mobile Editor",
+  "name": "BFMIDI WiFi",
   "short_name": "BFMIDI",
-  "description": "Editor BFMIDI via WiFi para Android e iOS",
+  "description": "BFMIDI Controller — Conexão WiFi",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "background_color": "#121214",
   "theme_color": "#121214",
   "icons": [
@@ -31,7 +31,5 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "categories": ["music", "utilities"],
-  "lang": "pt-BR"
+  ]
 }

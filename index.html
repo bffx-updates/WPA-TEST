@@ -1,978 +1,664 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#121214" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="BFMIDI" />
-  <title>BFMIDI Mobile</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/svg+xml" href="./bfmidi_icon.svg" />
-  <link rel="shortcut icon" href="./bfmidi_icon.svg" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BFMIDI">
+  <title>BFMIDI WiFi</title>
+  <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <style>
-    /* â”€â”€ Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     :root {
-      --bg: #121214;
+      --bg-body: #121214;
       --bg-card: #1c1c1f;
-      --bg-card2: #232326;
+      --bg-card-inner: #232326;
       --accent: #FFB300;
-      --accent-dim: rgba(255, 179, 0, 0.15);
+      --accent-hover: #ffc400;
       --accent-glow: rgba(255, 179, 0, 0.35);
-      --text: #f2f2f2;
-      --text-2: #a1a1aa;
-      --border: #333336;
+      --text-primary: #f2f2f2;
+      --text-secondary: #a1a1aa;
+      --border-subtle: #333336;
       --ok: #22c55e;
-      --err: #ef4444;
-      --header-h: 56px;
-      --nav-h: 64px;
-      --safe-b: env(safe-area-inset-bottom, 0px);
+      --warn: #f59e0b;
+      --error: #ef4444;
     }
 
-    /* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       width: 100%; height: 100%;
-      background: var(--bg);
-      color: var(--text);
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-body);
+      color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
-      -webkit-tap-highlight-color: transparent;
-      overscroll-behavior: none;
-    }
-
-    /* â”€â”€ Shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      height: 100dvh;
-    }
-
-    /* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #app-header {
-      height: var(--header-h);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      gap: 12px;
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border);
-      z-index: 30;
-    }
-
-    .brand-icon {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      background: #0d111a url('./bfmidi_icon.svg') center/cover no-repeat;
-      display: flex; align-items: center; justify-content: center;
-      color: transparent; font-size: 0;
-      box-shadow: 0 0 12px rgba(67, 56, 202, 0.35);
-      flex-shrink: 0;
-      letter-spacing: -0.02em;
-    }
-
-    .brand-text { flex: 1; line-height: 1; }
-    .brand-text h1 {
-      font-size: 0.95rem; font-weight: 800;
-      letter-spacing: 0.05em; color: #fff;
-    }
-    .brand-text h1 span { color: var(--accent); }
-    .brand-sub {
-      font-size: 9px; color: #71717a;
-      text-transform: uppercase; letter-spacing: 0.18em; font-weight: 500;
-      margin-top: 2px;
-    }
-
-    /* connection status pill */
-    #status-pill {
-      display: flex; align-items: center; gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid;
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    #status-pill.disconnected {
-      border-color: rgba(239,68,68,0.35);
-      background: rgba(239,68,68,0.08);
-      color: #f87171;
-    }
-    #status-pill.connecting {
-      border-color: rgba(255,179,0,0.35);
-      background: rgba(255,179,0,0.08);
-      color: var(--accent);
-    }
-    #status-pill.connected {
-      border-color: rgba(34,197,94,0.35);
-      background: rgba(34,197,94,0.08);
-      color: #4ade80;
-    }
-    #status-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .disconnected #status-dot { background: #f87171; }
-    .connecting  #status-dot  { background: var(--accent); animation: pulse-dot 1s infinite; }
-    .connected   #status-dot  { background: #4ade80; }
-    @keyframes pulse-dot {
-      0%,100% { opacity: 1; }
-      50%     { opacity: 0.3; }
-    }
-
-    /* â”€â”€ Content area â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #frame-wrap {
-      flex: 1;
       overflow: hidden;
-      position: relative;
     }
 
-    #content-frame {
-      width: 100%; height: 100%;
-      border: none;
-      background: var(--bg);
-      display: block;
-    }
-
-    /* â”€â”€ Bottom navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #bottom-nav {
-      height: calc(var(--nav-h) + var(--safe-b));
-      flex-shrink: 0;
-      display: flex;
-      align-items: stretch;
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      padding-bottom: var(--safe-b);
-      z-index: 30;
-    }
-
-    .nav-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      border: none;
-      background: transparent;
-      color: var(--text-2);
-      font-family: inherit;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: color 0.18s;
-      position: relative;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .nav-btn .nav-icon { font-size: 22px; transition: transform 0.18s; }
-    .nav-btn.active { color: var(--accent); }
-    .nav-btn.active::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 20%; right: 20%;
-      height: 2px;
-      border-radius: 0 0 2px 2px;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent-glow);
-    }
-    .nav-btn:active .nav-icon { transform: scale(0.88); }
-
-    /* â”€â”€ Connection overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #connect-screen {
+    /* ========== CONNECTION SCREEN ========== */
+    #connectionScreen {
       position: fixed; inset: 0;
-      background: var(--bg);
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      padding-bottom: calc(24px + var(--safe-b));
-      gap: 16px;
-    }
-    #connect-screen.hidden { display: none; }
-
-    .connect-logo {
-      width: 72px; height: 72px;
-      border-radius: 20px;
-      background: #0d111a url('./bfmidi_icon.svg') center/cover no-repeat;
-      display: flex; align-items: center; justify-content: center;
-      color: transparent; font-size: 0;
-      box-shadow:
-        0 0 0 1px rgba(67,56,202,0.25),
-        0 0 40px rgba(37,99,235,0.25),
-        0 8px 24px rgba(0,0,0,0.4);
-    }
-
-    .connect-title {
-      font-size: 1.5rem; font-weight: 800;
-      color: #fff; letter-spacing: 0.04em; text-align: center;
-    }
-    .connect-sub {
-      font-size: 0.8rem; color: var(--text-2);
-      text-align: center; line-height: 1.55; max-width: 300px;
-    }
-
-    .connect-card {
-      width: 100%; max-width: 360px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      display: flex; flex-direction: column; gap: 14px;
-    }
-
-    .field-label {
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--text-2); margin-bottom: 6px;
-    }
-
-    .field-row { display: flex; align-items: center; gap: 10px; }
-
-    .quick-connect-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .btn-quick-connect {
-      min-height: 54px;
-      border-radius: 10px;
-      border: 1px solid #4a4a50;
-      background: linear-gradient(180deg, #2f2f34 0%, #252529 100%);
-      color: #f2f2f2;
-      font-family: inherit;
-      font-size: 0.78rem;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: transform 0.1s, border-color 0.18s, box-shadow 0.18s;
-    }
-    .btn-quick-connect:active {
-      transform: scale(0.97);
-    }
-    .btn-quick-connect.active {
-      border-color: rgba(255, 179, 0, 0.6);
-      box-shadow: 0 0 12px rgba(255, 179, 0, 0.22);
-      background: linear-gradient(180deg, #3c3322 0%, #2f2a1f 100%);
-    }
-    .btn-quick-connect:disabled {
-      opacity: 0.6;
-      cursor: default;
-    }
-    .btn-quick-sub {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0;
-      text-transform: none;
-      color: #a1a1aa;
-    }
-
-    .ip-input {
-      flex: 1; height: 46px;
-      background: #1a1a1d;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0 14px;
-      color: var(--text);
-      font-family: 'Inter', monospace;
-      font-size: 1.05rem; font-weight: 500;
-      letter-spacing: 0.04em;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      -webkit-appearance: none;
-    }
-    .ip-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-dim);
-    }
-
-    .btn-connect {
-      height: 46px; padding: 0 20px;
-      background: var(--accent);
-      border: none; border-radius: 10px;
-      color: #000; font-family: inherit;
-      font-size: 0.85rem; font-weight: 800;
-      letter-spacing: 0.05em; text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.18s, transform 0.1s;
-      box-shadow: 0 0 16px var(--accent-glow);
-      flex-shrink: 0; white-space: nowrap;
-    }
-    .btn-connect:active   { transform: scale(0.96); }
-    .btn-connect:disabled { opacity: 0.55; cursor: default; }
-
-    .connect-info {
-      font-size: 11px; color: #52525b;
-      line-height: 1.6; text-align: center;
-    }
-    .connect-info b { color: #71717a; }
-
-    #connect-error {
-      display: none;
-      background: rgba(239,68,68,0.1);
-      border: 1px solid rgba(239,68,68,0.25);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 12px; color: #fca5a5; line-height: 1.5;
-    }
-    #connect-error.visible { display: block; }
-
-    .btn-open-direct {
-      display: none;
-      width: 100%; height: 42px;
-      background: transparent;
-      border: 1px solid rgba(255,179,0,0.35);
-      border-radius: 10px;
-      color: var(--accent);
-      font-family: inherit;
-      font-size: 0.8rem; font-weight: 700;
-      letter-spacing: 0.05em; text-transform: uppercase;
-      cursor: pointer; transition: background 0.18s;
-    }
-    .btn-open-direct.visible { display: block; }
-    .btn-open-direct:active { background: rgba(255,179,0,0.1); }
-
-    .btn-install-app {
-      display: none;
-      width: 100%; height: 42px;
-      background: #2b2b2f;
-      border: 1px solid #4a4a50;
-      border-radius: 10px;
-      color: #f2f2f2;
-      font-family: inherit;
-      font-size: 0.8rem; font-weight: 700;
-      letter-spacing: 0.05em; text-transform: uppercase;
-      cursor: pointer; transition: background 0.18s;
-    }
-    .btn-install-app.visible { display: block; }
-    .btn-install-app:active { background: #232327; }
-
-    #install-hint {
-      display: none;
-      font-size: 11px;
-      color: #8f8f99;
-      line-height: 1.5;
-      text-align: center;
-    }
-    #install-hint.visible { display: block; }
-
-    /* â”€â”€ Page loader â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #page-loader {
-      position: absolute; inset: 0;
-      background: rgba(18,18,20,0.85);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      z-index: 20; gap: 16px;
-      backdrop-filter: blur(2px);
+      z-index: 100;
+      background: var(--bg-body);
+      padding: 24px;
+      transition: opacity 0.4s, transform 0.4s;
     }
-    #page-loader.hidden { display: none; }
-
-    .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid rgba(255,179,0,0.15);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .loader-label {
-      font-size: 12px; font-weight: 600;
-      color: var(--text-2); letter-spacing: 0.08em; text-transform: uppercase;
+    #connectionScreen.hidden {
+      opacity: 0; transform: scale(0.95);
+      pointer-events: none;
     }
 
-    /* â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #toast-container {
-      position: fixed;
-      bottom: calc(var(--nav-h) + var(--safe-b) + 12px);
-      left: 12px; right: 12px;
-      display: flex; flex-direction: column; gap: 8px;
-      z-index: 200; pointer-events: none;
+    .conn-logo {
+      width: 72px; height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--accent) 0%, #e68a00 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; color: #121214;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px var(--accent-glow);
     }
-    .toast {
-      padding: 10px 16px; border-radius: 10px;
-      font-size: 13px; font-weight: 500; line-height: 1.4;
-      animation: toast-in 0.25s ease;
-      pointer-events: auto; max-width: 100%;
+
+    .conn-title {
+      font-size: 28px; font-weight: 700;
+      margin-bottom: 4px;
     }
-    .toast-info { background: #232326; border: 1px solid #444; color: #e2e2e5; }
-    .toast-ok   { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3);  color: #86efac; }
-    .toast-err  { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
-    @keyframes toast-in {
-      from { opacity: 0; transform: translateY(10px); }
+    .conn-sub {
+      font-size: 13px; color: var(--text-secondary);
+      margin-bottom: 36px;
+      text-align: center;
+    }
+
+    .conn-options {
+      display: flex; flex-direction: column;
+      gap: 14px; width: 100%; max-width: 340px;
+    }
+
+    .conn-btn {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-align: left;
+      color: var(--text-primary);
+      font-family: inherit;
+    }
+    .conn-btn:hover, .conn-btn:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+    .conn-btn:active {
+      transform: translateY(0);
+    }
+
+    .conn-btn .icon-circle {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .conn-btn.direct .icon-circle {
+      background: rgba(255, 179, 0, 0.15);
+      color: var(--accent);
+    }
+    .conn-btn.sta .icon-circle {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--ok);
+    }
+
+    .conn-btn-text h3 {
+      font-size: 15px; font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .conn-btn-text p {
+      font-size: 11px; color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* STA IP Input */
+    .sta-input-row {
+      display: none;
+      flex-direction: column; gap: 10px;
+      width: 100%; max-width: 340px;
+      margin-top: 6px;
+      animation: slideDown 0.3s ease;
+    }
+    .sta-input-row.visible { display: flex; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* â”€â”€ Disconnected banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    #disconnected-banner {
-      display: none;
-      position: absolute; inset: 0;
-      background: var(--bg);
-      flex-direction: column; align-items: center; justify-content: center;
-      gap: 16px; z-index: 15; padding: 24px;
+    .sta-input-row input {
+      width: 100%; padding: 14px 16px;
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: 'Inter', monospace;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
     }
-    #disconnected-banner.visible { display: flex; }
-    .disconn-icon  { font-size: 56px; color: #3f3f46; }
-    .disconn-title { font-size: 1.1rem; font-weight: 700; color: #a1a1aa; text-align: center; }
-    .disconn-sub   { font-size: 0.8rem; color: #52525b; text-align: center; max-width: 280px; line-height: 1.55; }
-    .btn-reconnect {
-      height: 44px; padding: 0 24px;
-      background: var(--accent); border: none; border-radius: 10px;
-      color: #000; font-family: inherit;
-      font-size: 0.85rem; font-weight: 800;
-      letter-spacing: 0.05em; text-transform: uppercase;
-      cursor: pointer; box-shadow: 0 0 14px var(--accent-glow); margin-top: 4px;
+    .sta-input-row input:focus {
+      border-color: var(--accent);
+    }
+    .sta-input-row input::placeholder {
+      color: #555;
+    }
+
+    .sta-connect-btn {
+      padding: 14px;
+      background: var(--accent);
+      color: #121214;
+      border: none; border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .sta-connect-btn:hover { background: var(--accent-hover); }
+    .sta-connect-btn:active { transform: scale(0.97); }
+
+    /* ========== LOADING OVERLAY ========== */
+    #loadingOverlay {
+      position: fixed; inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 200;
+      background: rgba(18, 18, 20, 0.92);
+      backdrop-filter: blur(8px);
+    }
+    #loadingOverlay.active { display: flex; }
+
+    .spinner {
+      width: 44px; height: 44px;
+      border: 3px solid var(--border-subtle);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 14px; color: var(--text-secondary);
+    }
+
+    /* ========== APP SHELL ========== */
+    #appShell {
+      display: none;
+      flex-direction: column;
+      width: 100%; height: 100%;
+    }
+    #appShell.active { display: flex; }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex; align-items: center;
+      height: 52px; flex-shrink: 0;
+      padding: 0 12px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-subtle);
+      gap: 10px;
+    }
+    .top-bar-logo {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent) 0%, #e68a00 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: #121214;
+      flex-shrink: 0;
+    }
+    .top-bar-title {
+      font-size: 15px; font-weight: 700;
+      flex: 1;
+    }
+    .top-bar-status {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 600;
+      color: var(--ok);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 6px var(--ok);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .btn-disconnect-top {
+      background: none; border: none;
+      color: var(--text-secondary);
+      cursor: pointer; font-size: 20px;
+      padding: 4px;
+      display: flex; align-items: center;
+      transition: color 0.2s;
+    }
+    .btn-disconnect-top:hover { color: var(--error); }
+
+    /* iframe */
+    #editorFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: var(--bg-body);
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      display: flex;
+      height: 56px; flex-shrink: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .nav-tab {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px;
+      background: none; border: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 9px; font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-tab .material-symbols-outlined { font-size: 22px; }
+    .nav-tab.active {
+      color: var(--accent);
+    }
+    .nav-tab.active::after {
+      content: '';
+      position: absolute; top: 0; left: 20%; right: 20%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 0 0 2px 2px;
+    }
+
+    /* ========== ERROR TOAST ========== */
+    #errorToast {
+      position: fixed; bottom: 80px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1e1e22;
+      border: 1px solid var(--error);
+      color: var(--text-primary);
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 13px;
+      max-width: 320px;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 300;
+    }
+    #errorToast.show {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* History section */
+    .conn-history {
+      width: 100%; max-width: 340px;
+      margin-top: 20px;
+    }
+    .conn-history-title {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .history-chip {
+      display: inline-flex;
+      align-items: center; gap: 6px;
+      padding: 8px 14px;
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .history-chip:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    .history-chip .material-symbols-outlined {
+      font-size: 14px; color: var(--accent);
     }
   </style>
 </head>
-
 <body>
 
-<!-- â”€â”€ Connection screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-<div id="connect-screen">
-  <div class="connect-logo">BF</div>
-  <h1 class="connect-title">BFMIDI <span style="color:var(--accent)">MOBILE</span></h1>
-  <p class="connect-sub">
-    Conecte seu celular Ã  rede WiFi do BFMIDI e informe o Endereco do dispositivo (IP ou host).
-  </p>
+  <!-- ===== CONNECTION SCREEN ===== -->
+  <div id="connectionScreen">
+    <div class="conn-logo">BF</div>
+    <h1 class="conn-title">BFMIDI</h1>
+    <p class="conn-sub">Escolha o modo de conexão WiFi com o seu pedal</p>
 
-  <div class="connect-card">
-    <div>
-      <div class="field-label">Conexao rapida</div>
-      <div class="quick-connect-grid">
-        <button class="btn-quick-connect" id="btn-quick-ap" type="button">
-          WIFI DIRETO
-          <span class="btn-quick-sub">192.168.4.1</span>
-        </button>
-        <button class="btn-quick-connect" id="btn-quick-sta" type="button">
-          REDE STA
-          <span class="btn-quick-sub">bfmidi.local</span>
-        </button>
-      </div>
-    </div>
-    <input id="ip-input" type="hidden" value="" />
-    <div id="connect-error"></div>
-    <p class="connect-info">
-      Modo AP padrÃ£o: <b>192.168.4.1</b><br>
-      Modo STA (WiFi cliente): <b>bfmidi.local</b> (ou IP do roteador).
-    </p>
-    <button class="btn-open-direct" id="btn-open-direct">
-      â†— Abrir direto no dispositivo (http)
-    </button>
-    <button class="btn-install-app" id="btn-install-app">
-      Instalar App
-    </button>
-    <p id="install-hint"></p>
-  </div>
-</div>
+    <div class="conn-options">
+      <!-- DIRECT AP -->
+      <button class="conn-btn direct" id="btnDirect" type="button">
+        <div class="icon-circle">
+          <span class="material-symbols-outlined">wifi_tethering</span>
+        </div>
+        <div class="conn-btn-text">
+          <h3>CONEXÃO DIRETA</h3>
+          <p>WiFi do pedal (BFMIDI_WIFI)<br>IP: 192.168.4.1</p>
+        </div>
+      </button>
 
-<!-- â”€â”€ App shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-<div id="app" style="display:none;">
-
-  <header id="app-header">
-    <div class="brand-icon">BF</div>
-    <div class="brand-text">
-      <h1>BFMIDI<span>EDITOR</span></h1>
-      <div class="brand-sub">Mobile Â· WiFi</div>
-    </div>
-    <div id="status-pill" class="disconnected" title="Clique para reconectar">
-      <span id="status-dot"></span>
-      <span id="status-label">Offline</span>
-    </div>
-  </header>
-
-  <div id="frame-wrap">
-    <div id="page-loader">
-      <div class="spinner"></div>
-      <span class="loader-label">Carregando...</span>
+      <!-- STA / HOME NETWORK -->
+      <button class="conn-btn sta" id="btnSta" type="button">
+        <div class="icon-circle">
+          <span class="material-symbols-outlined">router</span>
+        </div>
+        <div class="conn-btn-text">
+          <h3>REDE LOCAL (Casa)</h3>
+          <p>Pedal conectado no seu roteador</p>
+        </div>
+      </button>
     </div>
 
-    <div id="disconnected-banner">
-      <span class="material-symbols-outlined disconn-icon">wifi_off</span>
-      <div class="disconn-title">Dispositivo Desconectado</div>
-      <div class="disconn-sub">
-        Verifique se o celular estÃ¡ na rede WiFi do BFMIDI e tente reconectar.
-      </div>
-      <button class="btn-reconnect" id="btn-reconnect">Reconectar</button>
+    <!-- STA IP Input -->
+    <div class="sta-input-row" id="staInputRow">
+      <input type="text" id="staIpInput" placeholder="IP ou bfmidi.local" autocomplete="off" spellcheck="false" />
+      <button class="sta-connect-btn" id="btnStaConnect" type="button">CONECTAR</button>
     </div>
 
-    <iframe id="content-frame"
-            src="about:blank"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-            title="BFMIDI Editor Content">
-    </iframe>
+    <!-- Saved IPs -->
+    <div class="conn-history" id="historySection" style="display:none;">
+      <div class="conn-history-title">Últimos usados</div>
+      <div id="historyChips"></div>
+    </div>
   </div>
 
-  <nav id="bottom-nav" role="navigation" aria-label="NavegaÃ§Ã£o principal">
-    <button class="nav-btn active" data-page="preset-config" aria-label="Preset Config">
-      <span class="material-symbols-outlined nav-icon">tune</span>
-      <span>Presets</span>
-    </button>
-    <button class="nav-btn" data-page="global-config" aria-label="Global Config">
-      <span class="material-symbols-outlined nav-icon">settings_input_component</span>
-      <span>Global</span>
-    </button>
-    <button class="nav-btn" data-page="system" aria-label="System">
-      <span class="material-symbols-outlined nav-icon">settings</span>
-      <span>Sistema</span>
-    </button>
-  </nav>
+  <!-- ===== LOADING OVERLAY ===== -->
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Conectando ao BFMIDI...</div>
+  </div>
 
-</div>
+  <!-- ===== ERROR TOAST ===== -->
+  <div id="errorToast" role="alert"></div>
 
-<div id="toast-container" aria-live="polite"></div>
+  <!-- ===== APP SHELL ===== -->
+  <div id="appShell">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="top-bar-logo">BF</div>
+      <div class="top-bar-title">BFMIDI</div>
+      <div class="top-bar-status">
+        <div class="status-dot"></div>
+        <span id="connLabel">ONLINE</span>
+      </div>
+      <button class="btn-disconnect-top" id="btnDisconnect" type="button" title="Desconectar">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
+    </div>
 
-<script>
-'use strict';
+    <!-- Editor iframe -->
+    <iframe id="editorFrame" title="BFMIDI Editor" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
 
-const LS_HOST      = 'bfmidi_wifi_host';
-const LS_IP_LEGACY = 'bfmidi_wifi_ip'; // backward compatibility
-const LS_CONN      = 'bfmidi_wifi_connected';
-const DEFAULT_HOST_AP  = '192.168.4.1';
-const DEFAULT_HOST_STA = 'bfmidi.local';
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <button class="nav-tab active" data-page="preset-config" id="tabPreset" type="button">
+        <span class="material-symbols-outlined">tune</span>
+        Presets
+      </button>
+      <button class="nav-tab" data-page="global-config" id="tabGlobal" type="button">
+        <span class="material-symbols-outlined">settings_input_component</span>
+        Global
+      </button>
+      <button class="nav-tab" data-page="system" id="tabSystem" type="button">
+        <span class="material-symbols-outlined">settings</span>
+        System
+      </button>
+    </div>
+  </div>
 
-// Paths are relative to this index.html (repo root)
-const PAGE_PATHS = {
-  'preset-config': './preset-config/index.html',
-  'global-config': './global-config/index.html',
-  'system':        './system/index.html',
-};
+  <script>
+    // ========================================================================
+    //  BFMIDI WiFi App — Shell
+    // ========================================================================
+    (() => {
+      "use strict";
 
-function normalizeHostInput(raw) {
-  let value = String(raw || '').trim().toLowerCase();
-  if (!value) return '';
-  value = value.replace(/^https?:\/\//, '');
-  value = value.split('/')[0];
-  value = value.split('?')[0];
-  value = value.split('#')[0];
-  return value;
-}
+      // --- Storage helpers ---
+      const STORAGE_KEY = "bfmidi_wifi_history";
+      const MAX_HISTORY = 5;
 
-function buildHostCandidates(rawInput) {
-  const input = normalizeHostInput(rawInput);
-  const candidates = [];
-  const pushUnique = (host) => {
-    const normalized = normalizeHostInput(host);
-    if (!normalized) return;
-    if (!candidates.includes(normalized)) candidates.push(normalized);
-  };
-
-  if (input) pushUnique(input);
-  pushUnique(DEFAULT_HOST_AP);
-  pushUnique(DEFAULT_HOST_STA);
-  return candidates;
-}
-
-function setQuickModeSelection(host) {
-  const normalized = normalizeHostInput(host);
-  const quickAp = document.getElementById('btn-quick-ap');
-  const quickSta = document.getElementById('btn-quick-sta');
-  if (!quickAp || !quickSta) return;
-
-  quickAp.classList.toggle('active', normalized === DEFAULT_HOST_AP);
-  quickSta.classList.toggle('active', normalized === DEFAULT_HOST_STA);
-}
-
-let deviceHost     = normalizeHostInput(
-  localStorage.getItem(LS_HOST) ||
-  localStorage.getItem(LS_IP_LEGACY) ||
-  DEFAULT_HOST_AP
-) || DEFAULT_HOST_AP;
-let currentPage    = 'preset-config';
-let connected      = false;
-let frameLoadCount = 0;
-let deferredInstallPrompt = null;
-
-// â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function toast(msg, type = 'info', duration = 3000) {
-  const el = document.createElement('div');
-  el.className = `toast toast-${type}`;
-  el.textContent = msg;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => el.remove(), duration);
-}
-
-function setupInstallUi() {
-  const installBtn = document.getElementById('btn-install-app');
-  const installHint = document.getElementById('install-hint');
-  if (!installBtn || !installHint) return;
-
-  const ua = navigator.userAgent || '';
-  const isIos = /iphone|ipad|ipod/i.test(ua);
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-  if (isStandalone) {
-    installBtn.classList.remove('visible');
-    installHint.classList.remove('visible');
-    return;
-  }
-
-  if (isIos) {
-    installHint.textContent = 'No iPhone: Safari > Compartilhar > Adicionar a Tela de Inicio.';
-    installHint.classList.add('visible');
-    installBtn.textContent = 'Como instalar no iPhone';
-    installBtn.classList.add('visible');
-    installBtn.addEventListener('click', () => {
-      alert('No Safari: toque em Compartilhar e depois em Adicionar a Tela de Inicio.');
-    });
-  } else {
-    installHint.textContent = 'Se o navegador nao mostrar o banner, use este botao para instalar.';
-    installHint.classList.add('visible');
-    installBtn.textContent = 'Instalar App';
-    installBtn.classList.add('visible');
-  }
-
-  window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    installBtn.textContent = 'Instalar App';
-    installBtn.classList.add('visible');
-  });
-
-  installBtn.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) {
-      if (!isIos) {
-        toast('Use o menu do navegador e toque em "Instalar app".', 'info', 4200);
+      function loadHistory() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        } catch { return []; }
       }
-      return;
-    }
-    deferredInstallPrompt.prompt();
-    try {
-      await deferredInstallPrompt.userChoice;
-    } catch {}
-    deferredInstallPrompt = null;
-    installBtn.classList.remove('visible');
-  });
+      function saveToHistory(ip) {
+        const list = loadHistory().filter(i => i !== ip);
+        list.unshift(ip);
+        if (list.length > MAX_HISTORY) list.length = MAX_HISTORY;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch {}
+      }
 
-  window.addEventListener('appinstalled', () => {
-    deferredInstallPrompt = null;
-    installBtn.classList.remove('visible');
-    installHint.classList.remove('visible');
-    toast('App instalado com sucesso.', 'ok');
-  });
-}
+      // --- DOM refs ---
+      const $ = (id) => document.getElementById(id);
+      const connectionScreen = $("connectionScreen");
+      const loadingOverlay    = $("loadingOverlay");
+      const loadingText       = $("loadingText");
+      const appShell          = $("appShell");
+      const editorFrame       = $("editorFrame");
+      const errorToast        = $("errorToast");
+      const btnDirect         = $("btnDirect");
+      const btnSta            = $("btnSta");
+      const staInputRow       = $("staInputRow");
+      const staIpInput        = $("staIpInput");
+      const btnStaConnect     = $("btnStaConnect");
+      const btnDisconnect     = $("btnDisconnect");
+      const connLabel         = $("connLabel");
+      const historySection    = $("historySection");
+      const historyChips      = $("historyChips");
 
-// â”€â”€ WiFi Bridge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Exposed on window so parity-bridge-client.js (inside the iframe)
-// can call window.parent.BFMIDIExternalBridge.request() and have
-// its fetch intercepted and forwarded to the real device over HTTP.
-window.BFMIDIExternalBridge = {
-  async request(urlString, init) {
-    const url    = new URL(urlString);
-    const target = `http://${deviceHost}${url.pathname}${url.search}`;
-    const method = (init?.method || 'GET').toUpperCase();
-
-    try {
-      const opts = { method, mode: 'cors', credentials: 'omit' };
-      if (init?.headers) opts.headers = init.headers;
-      if (init?.body && method !== 'GET' && method !== 'HEAD') opts.body = init.body;
-      if (AbortSignal?.timeout) opts.signal = AbortSignal.timeout(10000);
-
-      const resp = await fetch(target, opts);
-      const body = await resp.text();
-      const headers = {};
-      resp.headers.forEach((v, k) => { headers[k] = v; });
-      return { status: resp.status, headers, body };
-
-    } catch (err) {
-      setConnectionState(false);
-      return {
-        status: 503,
-        headers: { 'content-type': 'application/json; charset=utf-8' },
-        body: JSON.stringify({ ok: false, error: err.message }),
+      const PAGE_MAP = {
+        "preset-config": "/preset-config",
+        "global-config": "/global-config",
+        "system":        "/system"
       };
-    }
-  },
-};
 
-// â”€â”€ Connection state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function setConnectionState(ok) {
-  connected = ok;
-  const pill   = document.getElementById('status-pill');
-  const label  = document.getElementById('status-label');
-  const banner = document.getElementById('disconnected-banner');
+      let currentIp = null;
+      let currentPage = "preset-config";
 
-  if (ok) {
-    pill.className    = 'connected';
-    label.textContent = deviceHost;
-    banner.classList.remove('visible');
-    localStorage.setItem(LS_CONN, '1');
-  } else {
-    pill.className    = 'disconnected';
-    label.textContent = 'Offline';
-    banner.classList.add('visible');
-    localStorage.removeItem(LS_CONN);
-  }
-}
+      // --- History chips ---
+      function renderHistory() {
+        const list = loadHistory();
+        if (!list.length) { historySection.style.display = "none"; return; }
+        historySection.style.display = "block";
+        historyChips.innerHTML = list.map(ip =>
+          `<span class="history-chip" data-ip="${ip}">
+            <span class="material-symbols-outlined">history</span>
+            ${ip}
+          </span>`
+        ).join("");
 
-function setConnecting(text = 'Conectando...') {
-  document.getElementById('status-pill').className    = 'connecting';
-  document.getElementById('status-label').textContent = text;
-}
-
-// â”€â”€ Ping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async function testConnection(host) {
-  const tryFetch = async (url) => {
-    const opts = { method: 'GET', mode: 'cors', credentials: 'omit' };
-    if (AbortSignal?.timeout) opts.signal = AbortSignal.timeout(6000);
-    const r = await fetch(url, opts);
-    return r.status < 500;
-  };
-
-  const endpoints = [
-    '/api/host-status',
-    '/api/system/info',
-    '/api/wifi/status',
-  ];
-
-  for (const endpoint of endpoints) {
-    try {
-      if (await tryFetch(`http://${host}${endpoint}`)) return true;
-    } catch {}
-  }
-
-  return false;
-}
-
-function openDirectHost(host, sameTab = false) {
-  const normalized = normalizeHostInput(host) || deviceHost || DEFAULT_HOST_AP;
-  const url = `http://${normalized}/preset-config`;
-  if (sameTab) {
-    window.location.href = url;
-    return;
-  }
-  window.open(url, '_blank');
-}
-
-// â”€â”€ CSS injected into parity iframe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const MOBILE_CSS = `
-/* === BFMIDI Mobile Override === */
-html, body {
-  height: auto !important;
-  min-height: 0 !important;
-  overflow: visible !important;
-  overflow-y: auto !important;
-}
-body > aside,
-aside.w-72,
-aside[class*="w-72"],
-aside[class*="bg-\\[#1c1c1f\\]"] {
-  display: none !important;
-}
-body > main, main.flex-1 {
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-body.flex.h-screen {
-  flex-direction: column !important;
-  height: 100% !important;
-  overflow: hidden !important;
-}
-.max-w-6xl { max-width: 100% !important; }
-.p-8  { padding: 14px !important; }
-.px-8 { padding-left: 14px !important; padding-right: 14px !important; }
-.pb-32 { padding-bottom: 24px !important; }
-.grid.grid-cols-1.lg\\:grid-cols-\\[1\\.05fr_1fr\\] {
-  grid-template-columns: 1fr !important;
-}
-@media (max-width: 420px) {
-  #layer1Switches, #layer2Switches {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-.live-layer-tabs {
-  min-width: 0 !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-}
-.live-layer-tab {
-  min-width: 110px !important;
-  min-height: 44px !important;
-  font-size: 0.95rem !important;
-}
-@media (max-width: 540px) {
-  .grid.grid-cols-12 { grid-template-columns: 1fr !important; }
-  .col-span-4, .col-span-8,
-  .md\\:col-span-4, .md\\:col-span-8 { grid-column: span 1 !important; }
-}
-.tactile-switch-btn { min-height: 72px !important; }
-.foot-button { min-height: 110px !important; }
-@media (max-width: 480px) {
-  .space-y-4 > * + * { margin-top: 12px !important; }
-  .space-y-6 > * + * { margin-top: 16px !important; }
-  .gap-6 { gap: 12px !important; }
-}
-`;
-
-// â”€â”€ Load page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function loadPage(page) {
-  if (!connected) return;
-  currentPage = page;
-
-  const frame  = document.getElementById('content-frame');
-  const loader = document.getElementById('page-loader');
-
-  document.querySelectorAll('.nav-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.page === page)
-  );
-
-  loader.classList.remove('hidden');
-  const token = ++frameLoadCount;
-
-  frame.onload = () => {
-    if (token !== frameLoadCount) return;
-    try {
-      const doc = frame.contentDocument || frame.contentWindow?.document;
-      if (doc?.head) {
-        doc.getElementById('bfmidi-mobile-css')?.remove();
-        const s = doc.createElement('style');
-        s.id = 'bfmidi-mobile-css';
-        s.textContent = MOBILE_CSS;
-        doc.head.appendChild(s);
+        historyChips.querySelectorAll(".history-chip").forEach(chip => {
+          chip.addEventListener("click", () => connectTo(chip.dataset.ip));
+        });
       }
-    } catch {}
-    loader.classList.add('hidden');
-  };
 
-  frame.src = PAGE_PATHS[page] + '?host=' + encodeURIComponent(deviceHost);
-}
+      // --- Toast ---
+      let toastTimer = null;
+      function showToast(msg, durationMs = 4000) {
+        errorToast.textContent = msg;
+        errorToast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => errorToast.classList.remove("show"), durationMs);
+      }
 
-// â”€â”€ Connect flow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function startEditorSession(host, showToast = true) {
-  const normalized = normalizeHostInput(host) || DEFAULT_HOST_AP;
-  deviceHost = normalized;
-  localStorage.setItem(LS_HOST, deviceHost);
-  localStorage.setItem(LS_IP_LEGACY, deviceHost); // keep old key updated
-  setQuickModeSelection(deviceHost);
+      // --- Loading ---
+      function showLoading(msg) {
+        loadingText.textContent = msg || "Conectando ao BFMIDI...";
+        loadingOverlay.classList.add("active");
+      }
+      function hideLoading() {
+        loadingOverlay.classList.remove("active");
+      }
 
-  document.getElementById('connect-screen').classList.add('hidden');
-  document.getElementById('app').style.display = 'flex';
-  setConnectionState(true);
-  loadPage(currentPage);
-  if (showToast) {
-    toast('Conectado a ' + deviceHost, 'ok');
-  }
-}
+      // --- Connection ---
+      async function connectTo(ip) {
+        currentIp = ip.replace(/\/+$/, "");
+        const baseUrl = currentIp.startsWith("http") ? currentIp : `http://${currentIp}`;
 
-async function doConnect(hostInput, options = {}) {
-  const probe = !!options.probe;
-  const showToast = options.showToast !== false;
-  const candidates = buildHostCandidates(hostInput);
+        showLoading(`Conectando a ${currentIp}...`);
 
-  const errEl = document.getElementById('connect-error');
-  const openDirectBtn = document.getElementById('btn-open-direct');
-  errEl.classList.remove('visible');
-  openDirectBtn.classList.remove('visible');
+        // Test connection by trying to fetch the manifest or a known API
+        let reachable = false;
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+          const resp = await fetch(`${baseUrl}/api/system/info`, {
+            signal: controller.signal,
+            mode: "cors"
+          });
+          clearTimeout(timeout);
+          reachable = resp.ok;
+        } catch (err) {
+          console.warn("Fetch test failed:", err);
 
-  const preferred = candidates[0] || deviceHost || DEFAULT_HOST_AP;
-  setConnecting('Carregando...');
+          // Fallback: just try loading the iframe directly.
+          // On some browsers, fetch may fail but iframe may work
+          // if the page sets X-Frame-Options or has different CORS policies.
+          reachable = true; // Optimistic — let iframe try
+        }
 
-  // Default UX: user chooses mode and already has network, so open immediately.
-  if (!probe) {
-    startEditorSession(preferred, showToast);
-    return;
-  }
+        if (!reachable) {
+          hideLoading();
+          showToast(`Não foi possível alcançar ${currentIp}. Verifique se o WiFi está conectado ao pedal.`);
+          return;
+        }
 
-  // Optional strict probe path (kept for diagnostics).
-  let connectedHost = null;
-  for (const host of candidates) {
-    if (await testConnection(host)) {
-      connectedHost = host;
-      break;
-    }
-  }
+        saveToHistory(currentIp);
+        connLabel.textContent = currentIp;
 
-  if (connectedHost) {
-    startEditorSession(connectedHost, showToast);
-    return;
-  }
+        // Load the default page in iframe
+        currentPage = "preset-config";
+        editorFrame.src = `${baseUrl}${PAGE_MAP[currentPage]}`;
 
-  setConnectionState(false);
-  const attempted = candidates.map(h => `http://${h}`).join(' ou ');
-  errEl.textContent = `Nao foi possivel conectar em ${attempted}.`;
-  errEl.classList.add('visible');
-  openDirectBtn.classList.add('visible');
-  setQuickModeSelection(preferred);
-}
+        editorFrame.onload = () => {
+          hideLoading();
+          connectionScreen.classList.add("hidden");
+          appShell.classList.add("active");
+        };
 
-function connectQuick(host) {
-  const targetHost = normalizeHostInput(host) || host;
-  setQuickModeSelection(targetHost);
-  doConnect(targetHost, { probe: false, showToast: false });
-}
+        editorFrame.onerror = () => {
+          hideLoading();
+          showToast("Erro ao carregar a página do BFMIDI.");
+        };
 
-// â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-document.getElementById('btn-quick-ap').addEventListener('click', () => {
-  connectQuick(DEFAULT_HOST_AP);
-});
+        // Safety timeout — if iframe doesn't fire onload in 8s, show anyway
+        setTimeout(() => {
+          if (!appShell.classList.contains("active")) {
+            hideLoading();
+            connectionScreen.classList.add("hidden");
+            appShell.classList.add("active");
+          }
+        }, 8000);
+      }
 
-document.getElementById('btn-quick-sta').addEventListener('click', () => {
-  connectQuick(DEFAULT_HOST_STA);
-});
+      function disconnect() {
+        editorFrame.src = "about:blank";
+        appShell.classList.remove("active");
+        connectionScreen.classList.remove("hidden");
+        currentIp = null;
+        renderHistory();
+        // Reset active tab
+        document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+        document.querySelector('[data-page="preset-config"]').classList.add("active");
+        currentPage = "preset-config";
+      }
 
-document.getElementById('btn-open-direct').addEventListener('click', () => {
-  openDirectHost(deviceHost, true);
-});
+      // --- Navigation ---
+      document.querySelectorAll(".nav-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          const page = tab.dataset.page;
+          if (page === currentPage || !currentIp) return;
 
-document.getElementById('status-pill').addEventListener('click', () => {
-  if (connected && !confirm(`Desconectar de ${deviceHost}?`)) return;
-  setConnectionState(false);
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('connect-screen').classList.remove('hidden');
-});
+          document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          currentPage = page;
 
-document.getElementById('btn-reconnect').addEventListener('click', () => doConnect(deviceHost));
+          const baseUrl = currentIp.startsWith("http") ? currentIp : `http://${currentIp}`;
+          editorFrame.src = `${baseUrl}${PAGE_MAP[page]}`;
+        });
+      });
 
-document.querySelectorAll('.nav-btn').forEach(btn =>
-  btn.addEventListener('click', () => loadPage(btn.dataset.page))
-);
+      // --- Event Listeners ---
+      btnDirect.addEventListener("click", () => {
+        connectTo("192.168.4.1");
+      });
 
-// â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-(function init() {
-  setQuickModeSelection(deviceHost);
-  setupInstallUi();
+      btnSta.addEventListener("click", () => {
+        staInputRow.classList.toggle("visible");
+        if (staInputRow.classList.contains("visible")) {
+          staIpInput.focus();
+          // Pre-fill with last STA ip if available
+          const history = loadHistory();
+          const staIp = history.find(ip => ip !== "192.168.4.1");
+          if (staIp && !staIpInput.value) staIpInput.value = staIp;
+        }
+      });
 
-  if (localStorage.getItem(LS_CONN) === '1') {
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('connect-screen').classList.add('hidden');
-    doConnect(deviceHost, { probe: false, showToast: false });
-  }
+      btnStaConnect.addEventListener("click", () => {
+        const ip = staIpInput.value.trim();
+        if (!ip) {
+          showToast("Digite o IP ou endereço do pedal.");
+          return;
+        }
+        connectTo(ip);
+      });
 
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  }
-})();
+      staIpInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") btnStaConnect.click();
+      });
 
-window.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'BFMIDI_DISCONNECT') {
-    if (connected) {
-      setConnectionState(false);
-    }
-  }
-});
-</script>
+      btnDisconnect.addEventListener("click", disconnect);
+
+      // --- Init ---
+      renderHistory();
+
+      // Register Service Worker
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(err => {
+          console.warn("SW registration failed:", err);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
-
-
