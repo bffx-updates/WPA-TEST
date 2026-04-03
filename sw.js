@@ -1,4 +1,4 @@
-const CACHE = 'bfmidi-pwa-v5';
+const CACHE = 'bfmidi-pwa-v7';
 
 // Only cache the PWA shell itself.
 // Parity pages (preset-config, global-config, system) are always fetched

@@ -226,20 +226,6 @@
       text-align: center; line-height: 1.55; max-width: 300px;
     }
 
-    /* HTTPS warning */
-    #https-warn {
-      display: none;
-      width: 100%; max-width: 360px;
-      background: rgba(245,158,11,0.08);
-      border: 1px solid rgba(245,158,11,0.25);
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 11px; color: #fcd34d;
-      line-height: 1.65; text-align: left;
-    }
-    #https-warn.visible { display: block; }
-    #https-warn b { color: #fde68a; }
-
     .connect-card {
       width: 100%; max-width: 360px;
       background: var(--bg-card);
@@ -285,9 +271,14 @@
     .btn-quick-connect:active {
       transform: scale(0.97);
     }
-    .btn-quick-connect.primary {
+    .btn-quick-connect.active {
       border-color: rgba(255, 179, 0, 0.6);
-      box-shadow: 0 0 10px rgba(255, 179, 0, 0.16);
+      box-shadow: 0 0 12px rgba(255, 179, 0, 0.22);
+      background: linear-gradient(180deg, #3c3322 0%, #2f2a1f 100%);
+    }
+    .btn-quick-connect:disabled {
+      opacity: 0.6;
+      cursor: default;
     }
     .btn-quick-sub {
       font-size: 11px;
@@ -466,19 +457,11 @@
     Conecte seu celular Ã  rede WiFi do BFMIDI e informe o Endereco do dispositivo (IP ou host).
   </p>
 
-  <div id="https-warn">
-    âš  <b>PÃ¡gina servida via HTTPS (GitHub Pages).</b><br>
-    O Chrome pode bloquear chamadas HTTP ao dispositivo local.<br><br>
-    <b>SoluÃ§Ã£o:</b> O firmware V11 jÃ¡ inclui os headers CORS + Private Network Access necessÃ¡rios.
-    No Chrome Android, ao conectar, <b>autorize o acesso Ã  rede local</b> quando solicitado.
-    Safari iOS pode bloquear â€” use Chrome ou Kiwi Browser.
-  </div>
-
   <div class="connect-card">
     <div>
       <div class="field-label">Conexao rapida</div>
       <div class="quick-connect-grid">
-        <button class="btn-quick-connect primary" id="btn-quick-ap" type="button">
+        <button class="btn-quick-connect" id="btn-quick-ap" type="button">
           WIFI DIRETO
           <span class="btn-quick-sub">192.168.4.1</span>
         </button>
@@ -488,16 +471,7 @@
         </button>
       </div>
     </div>
-
-    <div>
-      <div class="field-label">Conexao manual (opcional)</div>
-      <div class="field-row">
-        <input class="ip-input" id="ip-input" type="text"
-               placeholder="192.168.4.1 ou bfmidi.local" inputmode="url" autocomplete="off"
-               autocorrect="off" autocapitalize="off" spellcheck="false" />
-        <button class="btn-connect" id="btn-connect">Manual</button>
-      </div>
-    </div>
+    <input id="ip-input" type="hidden" value="" />
     <div id="connect-error"></div>
     <p class="connect-info">
       Modo AP padrÃ£o: <b>192.168.4.1</b><br>
@@ -608,6 +582,16 @@ function buildHostCandidates(rawInput) {
   pushUnique(DEFAULT_HOST_AP);
   pushUnique(DEFAULT_HOST_STA);
   return candidates;
+}
+
+function setQuickModeSelection(host) {
+  const normalized = normalizeHostInput(host);
+  const quickAp = document.getElementById('btn-quick-ap');
+  const quickSta = document.getElementById('btn-quick-sta');
+  if (!quickAp || !quickSta) return;
+
+  quickAp.classList.toggle('active', normalized === DEFAULT_HOST_AP);
+  quickSta.classList.toggle('active', normalized === DEFAULT_HOST_STA);
 }
 
 let deviceHost     = normalizeHostInput(
@@ -869,31 +853,32 @@ async function doConnect(hostInput) {
   const candidates = buildHostCandidates(hostInput);
 
   const errEl = document.getElementById('connect-error');
-  const btn   = document.getElementById('btn-connect');
+  const quickAp = document.getElementById('btn-quick-ap');
+  const quickSta = document.getElementById('btn-quick-sta');
   const openDirectBtn = document.getElementById('btn-open-direct');
   errEl.classList.remove('visible');
   openDirectBtn.classList.remove('visible');
-  btn.disabled = true;
-  btn.textContent = 'Testando...';
+  if (quickAp) quickAp.disabled = true;
+  if (quickSta) quickSta.disabled = true;
   setConnecting('Conectando...');
 
   let connectedHost = null;
   for (const host of candidates) {
-    setConnecting(`Testando ${host}...`);
+    setConnecting('Conectando...');
     if (await testConnection(host)) {
       connectedHost = host;
       break;
     }
   }
 
-  btn.disabled = false;
-  btn.textContent = 'Manual';
+  if (quickAp) quickAp.disabled = false;
+  if (quickSta) quickSta.disabled = false;
 
   if (connectedHost) {
     deviceHost = connectedHost;
     localStorage.setItem(LS_HOST, deviceHost);
     localStorage.setItem(LS_IP_LEGACY, deviceHost); // keep old key updated
-    document.getElementById('ip-input').value = deviceHost;
+    setQuickModeSelection(deviceHost);
 
     document.getElementById('connect-screen').classList.add('hidden');
     document.getElementById('app').style.display = 'flex';
@@ -910,12 +895,17 @@ async function doConnect(hostInput) {
     errEl.textContent = msg;
     errEl.classList.add('visible');
     openDirectBtn.classList.add('visible');
+
+    // Keep visual mode selected when user explicitly chose AP/STA.
+    if (candidates[0] === DEFAULT_HOST_AP || candidates[0] === DEFAULT_HOST_STA) {
+      setQuickModeSelection(candidates[0]);
+    }
   }
 }
 
 function connectQuick(host) {
   const targetHost = normalizeHostInput(host) || host;
-  document.getElementById('ip-input').value = targetHost;
+  setQuickModeSelection(targetHost);
   doConnect(targetHost);
 }
 
@@ -928,17 +918,8 @@ document.getElementById('btn-quick-sta').addEventListener('click', () => {
   connectQuick(DEFAULT_HOST_STA);
 });
 
-document.getElementById('btn-connect').addEventListener('click', () => {
-  doConnect(document.getElementById('ip-input').value.trim());
-});
-
-document.getElementById('ip-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doConnect(e.target.value.trim());
-});
-
 document.getElementById('btn-open-direct').addEventListener('click', () => {
-  const directHost = normalizeHostInput(document.getElementById('ip-input').value) || deviceHost;
-  window.open(`http://${directHost}/preset-config`, '_blank');
+  window.open(`http://${deviceHost}/preset-config`, '_blank');
 });
 
 document.getElementById('status-pill').addEventListener('click', () => {
@@ -956,12 +937,8 @@ document.querySelectorAll('.nav-btn').forEach(btn =>
 
 // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function init() {
-  document.getElementById('ip-input').value = deviceHost;
+  setQuickModeSelection(deviceHost);
   setupInstallUi();
-
-  if (location.protocol === 'https:') {
-    document.getElementById('https-warn').classList.add('visible');
-  }
 
   if (localStorage.getItem(LS_CONN) === '1') {
     document.getElementById('app').style.display = 'flex';
