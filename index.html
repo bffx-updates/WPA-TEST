@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet" />
   <style>
-    /* ── Tokens ─────────────────────────────────────── */
+    /* â”€â”€ Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     :root {
       --bg: #121214;
       --bg-card: #1c1c1f;
@@ -31,7 +31,7 @@
       --safe-b: env(safe-area-inset-bottom, 0px);
     }
 
-    /* ── Reset ───────────────────────────────────────── */
+    /* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
@@ -44,7 +44,7 @@
       overscroll-behavior: none;
     }
 
-    /* ── Shell ───────────────────────────────────────── */
+    /* â”€â”€ Shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #app {
       display: flex;
       flex-direction: column;
@@ -52,7 +52,7 @@
       height: 100dvh;
     }
 
-    /* ── Header ──────────────────────────────────────── */
+    /* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #app-header {
       height: var(--header-h);
       flex-shrink: 0;
@@ -129,7 +129,7 @@
       50%     { opacity: 0.3; }
     }
 
-    /* ── Content area ────────────────────────────────── */
+    /* â”€â”€ Content area â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #frame-wrap {
       flex: 1;
       overflow: hidden;
@@ -143,7 +143,7 @@
       display: block;
     }
 
-    /* ── Bottom navigation ───────────────────────────── */
+    /* â”€â”€ Bottom navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #bottom-nav {
       height: calc(var(--nav-h) + var(--safe-b));
       flex-shrink: 0;
@@ -188,7 +188,7 @@
     }
     .nav-btn:active .nav-icon { transform: scale(0.88); }
 
-    /* ── Connection overlay ──────────────────────────── */
+    /* â”€â”€ Connection overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #connect-screen {
       position: fixed; inset: 0;
       background: var(--bg);
@@ -320,7 +320,31 @@
     .btn-open-direct.visible { display: block; }
     .btn-open-direct:active { background: rgba(255,179,0,0.1); }
 
-    /* ── Page loader ─────────────────────────────────── */
+    .btn-install-app {
+      display: none;
+      width: 100%; height: 42px;
+      background: #2b2b2f;
+      border: 1px solid #4a4a50;
+      border-radius: 10px;
+      color: #f2f2f2;
+      font-family: inherit;
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.18s;
+    }
+    .btn-install-app.visible { display: block; }
+    .btn-install-app:active { background: #232327; }
+
+    #install-hint {
+      display: none;
+      font-size: 11px;
+      color: #8f8f99;
+      line-height: 1.5;
+      text-align: center;
+    }
+    #install-hint.visible { display: block; }
+
+    /* â”€â”€ Page loader â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #page-loader {
       position: absolute; inset: 0;
       background: rgba(18,18,20,0.85);
@@ -345,7 +369,7 @@
       color: var(--text-2); letter-spacing: 0.08em; text-transform: uppercase;
     }
 
-    /* ── Toast ────────────────────────────────────────── */
+    /* â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #toast-container {
       position: fixed;
       bottom: calc(var(--nav-h) + var(--safe-b) + 12px);
@@ -367,7 +391,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Disconnected banner ─────────────────────────── */
+    /* â”€â”€ Disconnected banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #disconnected-banner {
       display: none;
       position: absolute; inset: 0;
@@ -392,51 +416,55 @@
 
 <body>
 
-<!-- ── Connection screen ──────────────────────────────── -->
+<!-- â”€â”€ Connection screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <div id="connect-screen">
   <div class="connect-logo">BF</div>
   <h1 class="connect-title">BFMIDI <span style="color:var(--accent)">MOBILE</span></h1>
   <p class="connect-sub">
-    Conecte seu celular à rede WiFi do BFMIDI e informe o endereço IP do dispositivo.
+    Conecte seu celular Ã  rede WiFi do BFMIDI e informe o Endereco do dispositivo (IP ou host).
   </p>
 
   <div id="https-warn">
-    ⚠ <b>Página servida via HTTPS (GitHub Pages).</b><br>
+    âš  <b>PÃ¡gina servida via HTTPS (GitHub Pages).</b><br>
     O Chrome pode bloquear chamadas HTTP ao dispositivo local.<br><br>
-    <b>Solução:</b> O firmware V11 já inclui os headers CORS + Private Network Access necessários.
-    No Chrome Android, ao conectar, <b>autorize o acesso à rede local</b> quando solicitado.
-    Safari iOS pode bloquear — use Chrome ou Kiwi Browser.
+    <b>SoluÃ§Ã£o:</b> O firmware V11 jÃ¡ inclui os headers CORS + Private Network Access necessÃ¡rios.
+    No Chrome Android, ao conectar, <b>autorize o acesso Ã  rede local</b> quando solicitado.
+    Safari iOS pode bloquear â€” use Chrome ou Kiwi Browser.
   </div>
 
   <div class="connect-card">
     <div>
-      <div class="field-label">Endereço IP do dispositivo</div>
+      <div class="field-label">Endereco do dispositivo (IP ou host)</div>
       <div class="field-row">
         <input class="ip-input" id="ip-input" type="text"
-               placeholder="192.168.4.1" inputmode="url" autocomplete="off"
+               placeholder="192.168.4.1 ou bfmidi.local" inputmode="url" autocomplete="off"
                autocorrect="off" autocapitalize="off" spellcheck="false" />
         <button class="btn-connect" id="btn-connect">Conectar</button>
       </div>
     </div>
     <div id="connect-error"></div>
     <p class="connect-info">
-      Modo AP padrão: <b>192.168.4.1</b><br>
-      Se o BFMIDI estiver em modo STA (rede doméstica), verifique o IP no roteador.
+      Modo AP padrÃ£o: <b>192.168.4.1</b><br>
+      Modo STA (WiFi cliente): <b>bfmidi.local</b> (ou IP do roteador).
     </p>
     <button class="btn-open-direct" id="btn-open-direct">
-      ↗ Abrir direto no dispositivo (http)
+      â†— Abrir direto no dispositivo (http)
     </button>
+    <button class="btn-install-app" id="btn-install-app">
+      Instalar App
+    </button>
+    <p id="install-hint"></p>
   </div>
 </div>
 
-<!-- ── App shell ──────────────────────────────────────── -->
+<!-- â”€â”€ App shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <div id="app" style="display:none;">
 
   <header id="app-header">
     <div class="brand-icon">BF</div>
     <div class="brand-text">
       <h1>BFMIDI<span>EDITOR</span></h1>
-      <div class="brand-sub">Mobile · WiFi</div>
+      <div class="brand-sub">Mobile Â· WiFi</div>
     </div>
     <div id="status-pill" class="disconnected" title="Clique para reconectar">
       <span id="status-dot"></span>
@@ -454,7 +482,7 @@
       <span class="material-symbols-outlined disconn-icon">wifi_off</span>
       <div class="disconn-title">Dispositivo Desconectado</div>
       <div class="disconn-sub">
-        Verifique se o celular está na rede WiFi do BFMIDI e tente reconectar.
+        Verifique se o celular estÃ¡ na rede WiFi do BFMIDI e tente reconectar.
       </div>
       <button class="btn-reconnect" id="btn-reconnect">Reconectar</button>
     </div>
@@ -466,7 +494,7 @@
     </iframe>
   </div>
 
-  <nav id="bottom-nav" role="navigation" aria-label="Navegação principal">
+  <nav id="bottom-nav" role="navigation" aria-label="NavegaÃ§Ã£o principal">
     <button class="nav-btn active" data-page="preset-config" aria-label="Preset Config">
       <span class="material-symbols-outlined nav-icon">tune</span>
       <span>Presets</span>
@@ -488,8 +516,11 @@
 <script>
 'use strict';
 
-const LS_IP   = 'bfmidi_wifi_ip';
-const LS_CONN = 'bfmidi_wifi_connected';
+const LS_HOST      = 'bfmidi_wifi_host';
+const LS_IP_LEGACY = 'bfmidi_wifi_ip'; // backward compatibility
+const LS_CONN      = 'bfmidi_wifi_connected';
+const DEFAULT_HOST_AP  = '192.168.4.1';
+const DEFAULT_HOST_STA = 'bfmidi.local';
 
 // Paths are relative to this index.html (repo root)
 const PAGE_PATHS = {
@@ -498,12 +529,42 @@ const PAGE_PATHS = {
   'system':        './system/index.html',
 };
 
-let deviceIp       = localStorage.getItem(LS_IP) || '192.168.4.1';
+function normalizeHostInput(raw) {
+  let value = String(raw || '').trim().toLowerCase();
+  if (!value) return '';
+  value = value.replace(/^https?:\/\//, '');
+  value = value.split('/')[0];
+  value = value.split('?')[0];
+  value = value.split('#')[0];
+  return value;
+}
+
+function buildHostCandidates(rawInput) {
+  const input = normalizeHostInput(rawInput);
+  const candidates = [];
+  const pushUnique = (host) => {
+    const normalized = normalizeHostInput(host);
+    if (!normalized) return;
+    if (!candidates.includes(normalized)) candidates.push(normalized);
+  };
+
+  if (input) pushUnique(input);
+  pushUnique(DEFAULT_HOST_AP);
+  pushUnique(DEFAULT_HOST_STA);
+  return candidates;
+}
+
+let deviceHost     = normalizeHostInput(
+  localStorage.getItem(LS_HOST) ||
+  localStorage.getItem(LS_IP_LEGACY) ||
+  DEFAULT_HOST_AP
+) || DEFAULT_HOST_AP;
 let currentPage    = 'preset-config';
 let connected      = false;
 let frameLoadCount = 0;
+let deferredInstallPrompt = null;
 
-// ── Toast ──────────────────────────────────────────────
+// â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function toast(msg, type = 'info', duration = 3000) {
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
@@ -512,14 +573,74 @@ function toast(msg, type = 'info', duration = 3000) {
   setTimeout(() => el.remove(), duration);
 }
 
-// ── WiFi Bridge ────────────────────────────────────────
+function setupInstallUi() {
+  const installBtn = document.getElementById('btn-install-app');
+  const installHint = document.getElementById('install-hint');
+  if (!installBtn || !installHint) return;
+
+  const ua = navigator.userAgent || '';
+  const isIos = /iphone|ipad|ipod/i.test(ua);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  if (isStandalone) {
+    installBtn.classList.remove('visible');
+    installHint.classList.remove('visible');
+    return;
+  }
+
+  if (isIos) {
+    installHint.textContent = 'No iPhone: Safari > Compartilhar > Adicionar a Tela de Inicio.';
+    installHint.classList.add('visible');
+    installBtn.textContent = 'Como instalar no iPhone';
+    installBtn.classList.add('visible');
+    installBtn.addEventListener('click', () => {
+      alert('No Safari: toque em Compartilhar e depois em Adicionar a Tela de Inicio.');
+    });
+  } else {
+    installHint.textContent = 'Se o navegador nao mostrar o banner, use este botao para instalar.';
+    installHint.classList.add('visible');
+    installBtn.textContent = 'Instalar App';
+    installBtn.classList.add('visible');
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installBtn.textContent = 'Instalar App';
+    installBtn.classList.add('visible');
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) {
+      if (!isIos) {
+        toast('Use o menu do navegador e toque em "Instalar app".', 'info', 4200);
+      }
+      return;
+    }
+    deferredInstallPrompt.prompt();
+    try {
+      await deferredInstallPrompt.userChoice;
+    } catch {}
+    deferredInstallPrompt = null;
+    installBtn.classList.remove('visible');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    installBtn.classList.remove('visible');
+    installHint.classList.remove('visible');
+    toast('App instalado com sucesso.', 'ok');
+  });
+}
+
+// â”€â”€ WiFi Bridge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Exposed on window so parity-bridge-client.js (inside the iframe)
 // can call window.parent.BFMIDIExternalBridge.request() and have
 // its fetch intercepted and forwarded to the real device over HTTP.
 window.BFMIDIExternalBridge = {
   async request(urlString, init) {
     const url    = new URL(urlString);
-    const target = `http://${deviceIp}${url.pathname}${url.search}`;
+    const target = `http://${deviceHost}${url.pathname}${url.search}`;
     const method = (init?.method || 'GET').toUpperCase();
 
     try {
@@ -545,7 +666,7 @@ window.BFMIDIExternalBridge = {
   },
 };
 
-// ── Connection state ───────────────────────────────────
+// â”€â”€ Connection state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setConnectionState(ok) {
   connected = ok;
   const pill   = document.getElementById('status-pill');
@@ -554,7 +675,7 @@ function setConnectionState(ok) {
 
   if (ok) {
     pill.className    = 'connected';
-    label.textContent = deviceIp;
+    label.textContent = deviceHost;
     banner.classList.remove('visible');
     localStorage.setItem(LS_CONN, '1');
   } else {
@@ -565,25 +686,36 @@ function setConnectionState(ok) {
   }
 }
 
-function setConnecting() {
+function setConnecting(text = 'Conectando...') {
   document.getElementById('status-pill').className    = 'connecting';
-  document.getElementById('status-label').textContent = 'Conectando…';
+  document.getElementById('status-label').textContent = text;
 }
 
-// ── Ping ───────────────────────────────────────────────
-async function testConnection(ip) {
+// â”€â”€ Ping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function testConnection(host) {
   const tryFetch = async (url) => {
     const opts = { method: 'GET', mode: 'cors', credentials: 'omit' };
     if (AbortSignal?.timeout) opts.signal = AbortSignal.timeout(6000);
     const r = await fetch(url, opts);
     return r.status < 500;
   };
-  try { return await tryFetch(`http://${ip}/api/host-status`); } catch {}
-  try { return await tryFetch(`http://${ip}/api/system/info`); } catch {}
+
+  const endpoints = [
+    '/api/host-status',
+    '/api/system/info',
+    '/api/wifi/status',
+  ];
+
+  for (const endpoint of endpoints) {
+    try {
+      if (await tryFetch(`http://${host}${endpoint}`)) return true;
+    } catch {}
+  }
+
   return false;
 }
 
-// ── CSS injected into parity iframe ───────────────────
+// â”€â”€ CSS injected into parity iframe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MOBILE_CSS = `
 /* === BFMIDI Mobile Override === */
 html, body {
@@ -643,7 +775,7 @@ body.flex.h-screen {
 }
 `;
 
-// ── Load page ──────────────────────────────────────────
+// â”€â”€ Load page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function loadPage(page) {
   if (!connected) return;
   currentPage = page;
@@ -676,70 +808,86 @@ function loadPage(page) {
   frame.src = PAGE_PATHS[page];
 }
 
-// ── Connect flow ───────────────────────────────────────
-async function doConnect(ip) {
-  deviceIp = ip.trim();
-  localStorage.setItem(LS_IP, deviceIp);
+// â”€â”€ Connect flow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function doConnect(hostInput) {
+  const candidates = buildHostCandidates(hostInput);
 
   const errEl = document.getElementById('connect-error');
   const btn   = document.getElementById('btn-connect');
+  const openDirectBtn = document.getElementById('btn-open-direct');
   errEl.classList.remove('visible');
+  openDirectBtn.classList.remove('visible');
   btn.disabled = true;
-  btn.textContent = 'Testando…';
-  setConnecting();
+  btn.textContent = 'Testando...';
+  setConnecting('Conectando...');
 
-  const ok = await testConnection(deviceIp);
+  let connectedHost = null;
+  for (const host of candidates) {
+    setConnecting(`Testando ${host}...`);
+    if (await testConnection(host)) {
+      connectedHost = host;
+      break;
+    }
+  }
 
   btn.disabled = false;
   btn.textContent = 'Conectar';
 
-  if (ok) {
+  if (connectedHost) {
+    deviceHost = connectedHost;
+    localStorage.setItem(LS_HOST, deviceHost);
+    localStorage.setItem(LS_IP_LEGACY, deviceHost); // keep old key updated
+    document.getElementById('ip-input').value = deviceHost;
+
     document.getElementById('connect-screen').classList.add('hidden');
     document.getElementById('app').style.display = 'flex';
     setConnectionState(true);
     loadPage(currentPage);
-    toast('Conectado a ' + deviceIp, 'ok');
+    toast('Conectado a ' + deviceHost, 'ok');
   } else {
     setConnectionState(false);
-    let msg = `Não foi possível conectar a http://${deviceIp}. Verifique o IP e se o celular está na rede WiFi correta.`;
+    const attempted = candidates.map(h => `http://${h}`).join(' ou ');
+    let msg = `Nao foi possivel conectar em ${attempted}. Verifique se o celular esta na mesma rede da controladora.`;
     if (location.protocol === 'https:') {
-      msg += ' No Chrome Android, quando aparecer o aviso de "acesso à rede local", toque em Permitir.';
+      msg += ' No Chrome Android, quando aparecer o aviso de acesso a rede local, toque em Permitir.';
     }
     errEl.textContent = msg;
     errEl.classList.add('visible');
-    document.getElementById('btn-open-direct').classList.add('visible');
+    openDirectBtn.classList.add('visible');
   }
 }
 
-// ── Events ─────────────────────────────────────────────
+// â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('btn-connect').addEventListener('click', () => {
-  doConnect(document.getElementById('ip-input').value.trim() || '192.168.4.1');
+  doConnect(document.getElementById('ip-input').value.trim());
 });
 
 document.getElementById('ip-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doConnect(e.target.value.trim() || '192.168.4.1');
+  if (e.key === 'Enter') doConnect(e.target.value.trim());
 });
 
 document.getElementById('btn-open-direct').addEventListener('click', () => {
-  window.open(`http://${document.getElementById('ip-input').value.trim() || deviceIp}/preset-config`, '_blank');
+  const directHost = normalizeHostInput(document.getElementById('ip-input').value) || deviceHost;
+  window.open(`http://${directHost}/preset-config`, '_blank');
 });
 
 document.getElementById('status-pill').addEventListener('click', () => {
-  if (connected && !confirm(`Desconectar de ${deviceIp}?`)) return;
+  if (connected && !confirm(`Desconectar de ${deviceHost}?`)) return;
   setConnectionState(false);
   document.getElementById('app').style.display = 'none';
   document.getElementById('connect-screen').classList.remove('hidden');
 });
 
-document.getElementById('btn-reconnect').addEventListener('click', () => doConnect(deviceIp));
+document.getElementById('btn-reconnect').addEventListener('click', () => doConnect(deviceHost));
 
 document.querySelectorAll('.nav-btn').forEach(btn =>
   btn.addEventListener('click', () => loadPage(btn.dataset.page))
 );
 
-// ── Init ───────────────────────────────────────────────
+// â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function init() {
-  document.getElementById('ip-input').value = deviceIp;
+  document.getElementById('ip-input').value = deviceHost;
+  setupInstallUi();
 
   if (location.protocol === 'https:') {
     document.getElementById('https-warn').classList.add('visible');
@@ -748,16 +896,16 @@ document.querySelectorAll('.nav-btn').forEach(btn =>
   if (localStorage.getItem(LS_CONN) === '1') {
     document.getElementById('app').style.display = 'flex';
     document.getElementById('connect-screen').classList.add('hidden');
-    setConnecting();
-    testConnection(deviceIp).then(ok => {
-      if (ok) {
-        setConnectionState(true);
-        loadPage(currentPage);
-      } else {
-        setConnectionState(false);
+    setConnecting('Reconectando...');
+    doConnect(deviceHost).then(() => {
+      if (!connected) {
         document.getElementById('app').style.display = 'none';
         document.getElementById('connect-screen').classList.remove('hidden');
       }
+    }).catch(() => {
+      setConnectionState(false);
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('connect-screen').classList.remove('hidden');
     });
   }
 
@@ -768,3 +916,5 @@ document.querySelectorAll('.nav-btn').forEach(btn =>
 </script>
 </body>
 </html>
+
+

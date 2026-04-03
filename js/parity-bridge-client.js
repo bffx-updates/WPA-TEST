@@ -1,5 +1,5 @@
 ﻿(function () {
-  const ALLOWED_EXTERNAL_ORIGINS = new Set(["http://192.168.4.1"]);
+  const ALLOWED_EXTERNAL_ORIGINS = new Set(["http://192.168.4.1", "http://bfmidi.local"]);
 
   function normalizeUrl(input) {
     if (typeof input === "string") {
@@ -167,3 +167,4 @@
     window.setTimeout(syncSystemBoardState, 120);
   });
 })();
+
